@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#f0efe9"/>
+  <meta name="description" content="RMsee Ops System — SRE Eelixer, Tiruvannalai"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="RMsee Ops"/>
+  <title>RMsee Ops System — Dispatch Console</title>
+  <link rel="stylesheet" href="style.css"/>
+
+  <!--
+    ╔═══════════════════════════════════════════════════════════╗
+    ║  RMsee Ops System                                         ║
+    ║  Owner: SRE Eelixer, Tiruvannalai                        ║
+    ║  Design: Concrete Sage × Soft 3D × Glassmorphism         ║
+    ║  This file demonstrates all design system components.    ║
+    ╚═══════════════════════════════════════════════════════════╝
+  -->
+
+  <style>
+    /* ── Page-level background decoration ─────────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      right: -15%;
+      width: 55vw;
+      height: 55vw;
+      max-width: 400px;
+      max-height: 400px;
+      background: radial-gradient(circle, rgba(59,134,209,0.10) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Greeting header ─────────────────────────────────── */
+    .greeting-block {
+      padding: var(--sp-2) 0 var(--sp-5);
+    }
+
+    .greeting-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--blue-500);
+      margin-bottom: var(--sp-1);
+    }
+
+    .greeting-name {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--txt-primary);
+      line-height: 1.1;
+    }
+
+    .greeting-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      margin-top: var(--sp-2);
+    }
+
+    .greeting-date {
+      font-size: 0.78rem;
+      color: var(--txt-tertiary);
+    }
+
+    .greeting-shift {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(160deg, #f8f7f2, #eeeee8);
+      border: 1.5px solid rgba(255,255,255,0.85);
+      box-shadow: var(--shadow-3d-sm);
+      border-radius: var(--r-pill);
+      padding: 3px 10px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--txt-secondary);
+    }
+
+    .shift-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--clr-success);
+      box-shadow: 0 0 0 2px rgba(78,168,122,0.28);
+    }
+
+    /* ── Perishability row inside truck card ─────────────── */
+    .truck-perish-mini {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    /* ── Pour progress bar ───────────────────────────────── */
+    .pour-progress {
+      margin-top: var(--sp-2);
+    }
+
+    .pour-progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(47,51,52,0.08);
+      border-radius: var(--r-pill);
+      overflow: hidden;
+    }
+
+    .pour-progress-fill {
+      height: 100%;
+      border-radius: var(--r-pill);
+      background: linear-gradient(90deg, var(--blue-500), var(--blue-300));
+      transition: width 0.6s var(--ease-out);
+    }
+
+    .pour-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+
+    /* ── Action Fab ──────────────────────────────────────── */
+    .fab-area {
+      padding: var(--sp-2) 0 var(--sp-4);
+    }
+
+    .fab-btn {
+      width: 100%;
+      padding: var(--sp-4) var(--sp-6);
+      border-radius: var(--r-2xl);
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-3);
+      cursor: pointer;
+      border: none;
+      position: relative;
+      overflow: hidden;
+      min-height: 58px;
+      color: #fff;
+      background: linear-gradient(145deg,
+        #5299d8 0%,
+        #3b86d1 40%,
+        #2e75be 75%,
+        #2563ab 100%
+      );
+      box-shadow:
+        0 4px 8px rgba(37,99,171,0.22),
+        0 10px 28px rgba(59,134,209,0.40),
+        0 20px 48px rgba(59,134,209,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.38),
+        inset 0 -2px 0 rgba(37,99,171,0.30);
+      transition:
+        transform  var(--dur-fast) var(--ease-spring),
+        box-shadow var(--dur-fast) var(--ease-smooth);
+    }
+
+    /* Top liquid sheen */
+    .fab-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 52%;
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.32) 0%,
+        rgba(255,255,255,0.00) 100%
+      );
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    /* Animated ripple ring */
+    .fab-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.22);
+      pointer-events: none;
+    }
+
+    .fab-btn:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 4px 8px rgba(37,99,171,0.24),
+        0 14px 36px rgba(59,134,209,0.48),
+        0 28px 56px rgba(59,134,209,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.45),
+        inset 0 -2px 0 rgba(37,99,171,0.32);
+    }
+
+    .fab-btn:active {
+      transform: translateY(2px) scale(0.975);
+      box-shadow: var(--shadow-blue-pressed);
+    }
+
+    .fab-icon {
+      font-size: 1.35rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .fab-label {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Quick action strip ──────────────────────────────── */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-6);
+    }
+
+    .quick-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-2);
+      background: linear-gradient(160deg, #fdfdfa 0%, #f2f1ec 100%);
+      border-radius: var(--r-lg);
+      border: 1.5px solid rgba(255,255,255,0.88);
+      box-shadow: var(--shadow-3d-sm);
+      cursor: pointer;
+      transition:
+        transform  var(--dur-fast) var(--ease-spring),
+        box-shadow var(--dur-fast) var(--ease-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quick-action::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 40%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.60) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .quick-action:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-3d-md);
+    }
+
+    .quick-action:active {
+      transform: translateY(1px) scale(0.96);
+      box-shadow: var(--shadow-3d-pressed);
+    }
+
+    .quick-action-icon {
+      font-size: 1.4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .quick-action-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--txt-tertiary);
+      text-align: center;
+      line-height: 1.2;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Inline perishability mini ring (truck list) ─────── */
+    .ring-mini { position: relative; display: inline-block; }
+
+    /* ── Plant info card ─────────────────────────────────── */
+    .plant-card {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-4);
+      margin-bottom: var(--sp-5);
+    }
+
+    .plant-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--r-lg);
+      background: linear-gradient(145deg, var(--sage-200), var(--sage-500));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow-3d-sm);
+      flex-shrink: 0;
+    }
+
+    .plant-details { flex: 1; }
+
+    .plant-name {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--txt-primary);
+      line-height: 1.2;
+    }
+
+    .plant-location {
+      font-size: 0.75rem;
+      color: var(--txt-tertiary);
+      margin-top: 2px;
+    }
+
+    .plant-live-badge {
+      background: linear-gradient(145deg, rgba(78,168,122,0.20), rgba(78,168,122,0.10));
+      border: 1.5px solid rgba(78,168,122,0.40);
+      border-radius: var(--r-pill);
+      padding: 4px 10px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #1e6641;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      letter-spacing: 0.04em;
+    }
+
+    .live-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--clr-success);
+      animation: pulse-badge 1.4s ease-in-out infinite;
+    }
+
+    /* ── Section view-all link ───────────────────────────── */
+    .view-all {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--blue-500);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Truck card layout detail fixes ─────────────────── */
+    .truck-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      margin-top: var(--sp-1);
+      flex-wrap: wrap;
+    }
+
+    .truck-vol {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--txt-secondary);
+      background: var(--surface-mid);
+      border-radius: var(--r-xs);
+      padding: 1px 5px;
+    }
+
+    /* ── Inventory mini row ───────────────────────────────── */
+    .inv-row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-3) 0;
+      border-bottom: 1px solid rgba(47,51,52,0.06);
+    }
+
+    .inv-row:last-child { border-bottom: none; }
+
+    .inv-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--r-sm);
+      background: linear-gradient(145deg, #e8e7e2, #d7d6d1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: var(--shadow-3d-sm);
+      flex-shrink: 0;
+    }
+
+    .inv-info { flex: 1; }
+
+    .inv-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--txt-primary);
+      line-height: 1.2;
+    }
+
+    .inv-bar-wrap {
+      margin-top: 4px;
+      height: 5px;
+      background: rgba(47,51,52,0.08);
+      border-radius: var(--r-pill);
+      overflow: hidden;
+    }
+
+    .inv-bar-fill {
+      height: 100%;
+      border-radius: var(--r-pill);
+      transition: width 0.5s var(--ease-out);
+    }
+
+    .inv-bar-fill.ok      { background: linear-gradient(90deg, var(--clr-success), #82d4aa); }
+    .inv-bar-fill.warn    { background: linear-gradient(90deg, var(--clr-warning), #f0b86a); }
+    .inv-bar-fill.danger  { background: linear-gradient(90deg, var(--clr-danger), #ef8080); }
+
+    .inv-stock {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--txt-secondary);
+      text-align: right;
+      min-width: 70px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════════════════
+       APP SHELL
+  ══════════════════════════════════════════════════════ -->
+  <div id="app-shell">
+
+    <!-- ── TOP BAR ─────────────────────────────────────── -->
+    <header class="topbar glass-topbar" role="banner">
+
+      <div class="topbar-brand">
+        <div class="brand-logo" aria-hidden="true">⚙️</div>
+        <div class="brand-text">
+          <span class="brand-name">RMsee Ops</span>
+          <span class="brand-sub">SRE Eelixer · Tiruvannalai</span>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Network status pill -->
+        <div class="net-pill" role="status" aria-live="polite">
+          <span class="net-dot online" aria-hidden="true"></span>
+          <span>Online</span>
+        </div>
+
+        <!-- Notification icon button -->
+        <button class="btn-icon" aria-label="Notifications">
+          🔔
+          <span class="nav-badge" aria-label="2 alerts">2</span>
+        </button>
+
+        <!-- User avatar button -->
+        <button class="btn-icon" aria-label="Account — Dispatcher">
+          👤
+        </button>
+      </div>
+
+    </header>
+
+
+    <!-- ── MAIN CONTENT ────────────────────────────────── -->
+    <main class="app-main" id="app-root" role="main">
+
+      <!-- Greeting -->
+      <div class="greeting-block fade-up">
+        <div class="greeting-eyebrow">Dispatch Console</div>
+        <h1 class="greeting-name">Good morning, Ravi 👋</h1>
+        <div class="greeting-meta">
+          <span class="greeting-date">Thursday, 12 Mar 2026</span>
+          <div class="greeting-shift">
+            <span class="shift-dot"></span>
+            Morning Shift Active
+          </div>
+        </div>
+      </div>
+
+      <!-- Plant info card -->
+      <div class="plant-card glass fade-up">
+        <div class="plant-icon-wrap" aria-hidden="true">🏗️</div>
+        <div class="plant-details">
+          <div class="plant-name">SRE Eelixer Batch Plant</div>
+          <div class="plant-location">📍 Tiruvannalai, Tamil Nadu</div>
+        </div>
+        <div class="plant-live-badge">
+          <span class="live-dot" aria-hidden="true"></span>
+          LIVE
+        </div>
+      </div>
+
+      <!-- ── STAT CARDS ───────────────────────────────── -->
+      <section class="section" aria-label="Today's production summary">
+        <div class="section-header">
+          <span class="section-title">Today's Production</span>
+          <span class="text-xs text-muted">Updated 2 min ago</span>
+        </div>
+
+        <div class="stat-grid">
+
+          <!-- Stat 1: Poured today -->
+          <div class="stat-card stat-card-blue fade-up" role="article" aria-label="Poured today">
+            <div class="stat-header">
+              <span class="stat-icon" aria-hidden="true">🏗️</span>
+              <span class="stat-trend up" aria-label="Up 12%">↑ 12%</span>
+            </div>
+            <div class="stat-label">Poured Today</div>
+            <div class="stat-value">148<span class="stat-unit">m³</span></div>
+            <div class="stat-subtext">Target: 200 m³</div>
+          </div>
+
+          <!-- Stat 2: Active trucks -->
+          <div class="stat-card stat-card-sage fade-up" role="article" aria-label="Active trucks">
+            <div class="stat-header">
+              <span class="stat-icon" aria-hidden="true">🚛</span>
+              <span class="stat-trend up" aria-label="2 more than yesterday">+2</span>
+            </div>
+            <div class="stat-label">Trucks Active</div>
+            <div class="stat-value">7</div>
+            <div class="stat-subtext">of 9 in fleet</div>
+          </div>
+
+          <!-- Stat 3: Batches completed -->
+          <div class="stat-card fade-up" role="article" aria-label="Batches completed">
+            <div class="stat-header">
+              <span class="stat-icon" aria-hidden="true">✅</span>
+            </div>
+            <div class="stat-label">Completed</div>
+            <div class="stat-value">24</div>
+            <div class="stat-subtext">batch tickets</div>
+          </div>
+
+          <!-- Stat 4: Alerts (danger variant) -->
+          <div class="stat-card stat-card-danger fade-up" role="article" aria-label="Active alerts">
+            <div class="stat-header">
+              <span class="stat-icon" aria-hidden="true">⚠️</span>
+            </div>
+            <div class="stat-label">Alerts</div>
+            <div class="stat-value">2</div>
+            <div class="stat-subtext">need attention</div>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- ── PERISHABILITY ALERT ──────────────────────── -->
+      <section class="section fade-up" aria-label="Perishability alerts">
+        <div class="section-header">
+          <span class="section-title">⚠️ Perishability Alerts</span>
+        </div>
+
+        <!-- RED alert -->
+        <div class="alert alert-danger mb-3" role="alert" aria-live="assertive">
+          <span class="alert-icon" aria-hidden="true">🚨</span>
+          <div class="alert-body">
+            <div class="alert-title">TN-09 AB 4521 — 78 min elapsed</div>
+            <div class="alert-text">Only <strong>12 minutes</strong> remaining. Concrete expires at 08:47. Site: Block 5 Foundation.</div>
+          </div>
+        </div>
+
+        <!-- YELLOW alert -->
+        <div class="alert alert-warning" role="alert" aria-live="polite">
+          <span class="alert-icon" aria-hidden="true">⚡</span>
+          <div class="alert-body">
+            <div class="alert-title">TN-09 CD 7832 — 63 min elapsed</div>
+            <div class="alert-text"><strong>27 minutes</strong> remaining. Site: Column Grid B4. Driver: Suresh K.</div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ── PRIMARY ACTION FAB ───────────────────────── -->
+      <div class="fab-area fade-up">
+        <button class="fab-btn" id="create-batch-btn"
+                aria-label="Create new batch ticket">
+          <span class="fab-icon" aria-hidden="true">➕</span>
+          <span class="fab-label">Create Batch Ticket</span>
+        </button>
+      </div>
+
+
+      <!-- ── QUICK ACTIONS STRIP ──────────────────────── -->
+      <section class="section fade-up" aria-label="Quick actions">
+        <div class="section-header">
+          <span class="section-title">Quick Actions</span>
+        </div>
+
+        <div class="quick-actions">
+          <button class="quick-action" aria-label="New Order">
+            <span class="quick-action-icon" aria-hidden="true">📦</span>
+            <span class="quick-action-label">New Order</span>
+          </button>
+          <button class="quick-action" aria-label="Pour Session">
+            <span class="quick-action-icon" aria-hidden="true">🌊</span>
+            <span class="quick-action-label">Pour Session</span>
+          </button>
+          <button class="quick-action" aria-label="Receive Stock">
+            <span class="quick-action-icon" aria-hidden="true">📥</span>
+            <span class="quick-action-label">Receive Stock</span>
+          </button>
+          <button class="quick-action" aria-label="Reports">
+            <span class="quick-action-icon" aria-hidden="true">📊</span>
+            <span class="quick-action-label">Reports</span>
+          </button>
+        </div>
+      </section>
+
+
+      <!-- ── ACTIVE TRUCKS ─────────────────────────────── -->
+      <section class="section fade-up" aria-label="Active fleet">
+        <div class="section-header">
+          <span class="section-title">Active Fleet</span>
+          <a href="#fleet" class="view-all" aria-label="View all trucks">View all →</a>
+        </div>
+
+        <div class="card-list">
+
+          <!-- Truck 1 — RED perishability alert -->
+          <article class="truck-card alert-red"
+                   role="article"
+                   aria-label="Truck TN09AB4521 — RED perishability alert">
+            <div class="truck-avatar" aria-hidden="true">🚛</div>
+            <div class="truck-info">
+              <div class="truck-reg">TN 09 AB 4521</div>
+              <div class="truck-meta">
+                <span class="badge badge-pouring">Pouring</span>
+                <span class="truck-vol" aria-label="6 cubic metres">6.0 m³</span>
+              </div>
+              <div class="truck-dest">Block 5 Foundation · Suresh K.</div>
+            </div>
+            <!-- Mini perishability ring -->
+            <div class="truck-perish" aria-label="78 of 90 minutes elapsed — RED">
+              <div class="perish-ring-wrap">
+                <svg width="58" height="58" viewBox="0 0 60 60" aria-hidden="true">
+                  <circle class="perish-track" cx="30" cy="30" r="24"/>
+                  <circle class="perish-fill red" cx="30" cy="30" r="24"
+                          stroke-dasharray="150.8"
+                          stroke-dashoffset="26.4"/>
+                  <!-- dashoffset = circumference × (1 - elapsed/max) = 150.8 × (1-78/90) = 20.1 -->
+                </svg>
+                <div class="perish-center">
+                  <span class="perish-time" style="font-size:0.85rem">12<span style="font-size:0.55rem">m</span></span>
+                  <span class="perish-state-label red">RED</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Truck 2 — YELLOW perishability -->
+          <article class="truck-card alert-yellow"
+                   role="article"
+                   aria-label="Truck TN09CD7832 — YELLOW perishability warning">
+            <div class="truck-avatar" aria-hidden="true">🚛</div>
+            <div class="truck-info">
+              <div class="truck-reg">TN 09 CD 7832</div>
+              <div class="truck-meta">
+                <span class="badge badge-pouring">Pouring</span>
+                <span class="truck-vol" aria-label="7.5 cubic metres">7.5 m³</span>
+              </div>
+              <div class="truck-dest">Column Grid B4 · Murugan S.</div>
+            </div>
+            <div class="truck-perish" aria-label="63 of 90 minutes elapsed — YELLOW">
+              <div class="perish-ring-wrap">
+                <svg width="58" height="58" viewBox="0 0 60 60" aria-hidden="true">
+                  <circle class="perish-track" cx="30" cy="30" r="24"/>
+                  <circle class="perish-fill yellow" cx="30" cy="30" r="24"
+                          stroke-dasharray="150.8"
+                          stroke-dashoffset="44.6"/>
+                </svg>
+                <div class="perish-center">
+                  <span class="perish-time" style="font-size:0.85rem">27<span style="font-size:0.55rem">m</span></span>
+                  <span class="perish-state-label yellow">WARN</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Truck 3 — In transit, healthy -->
+          <article class="truck-card"
+                   role="article"
+                   aria-label="Truck TN09EF1190 — In transit">
+            <div class="truck-avatar" aria-hidden="true">🚛</div>
+            <div class="truck-info">
+              <div class="truck-reg">TN 09 EF 1190</div>
+              <div class="truck-meta">
+                <span class="badge badge-transit">En Route</span>
+                <span class="truck-vol">6.0 m³</span>
+              </div>
+              <div class="truck-dest">Slab Deck Level 3 · Karthik R.</div>
+            </div>
+            <div class="truck-perish" aria-label="32 of 90 minutes elapsed — GREEN">
+              <div class="perish-ring-wrap">
+                <svg width="58" height="58" viewBox="0 0 60 60" aria-hidden="true">
+                  <circle class="perish-track" cx="30" cy="30" r="24"/>
+                  <circle class="perish-fill green" cx="30" cy="30" r="24"
+                          stroke-dasharray="150.8"
+                          stroke-dashoffset="97.2"/>
+                </svg>
+                <div class="perish-center">
+                  <span class="perish-time" style="font-size:0.85rem">58<span style="font-size:0.55rem">m</span></span>
+                  <span class="perish-state-label green">OK</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Truck 4 — Available -->
+          <article class="truck-card"
+                   role="article"
+                   aria-label="Truck TN09GH3344 — Available">
+            <div class="truck-avatar" aria-hidden="true">🚛</div>
+            <div class="truck-info">
+              <div class="truck-reg">TN 09 GH 3344</div>
+              <div class="truck-meta">
+                <span class="badge badge-available">Available</span>
+                <span class="truck-vol">7.0 m³</span>
+              </div>
+              <div class="truck-dest">Ready for dispatch — Vijay P.</div>
+            </div>
+            <button class="btn btn-sm btn-primary" aria-label="Dispatch truck TN09GH3344">
+              Dispatch
+            </button>
+          </article>
+
+        </div>
+      </section>
+
+
+      <!-- ── ACTIVE ORDER PROGRESS ─────────────────────── -->
+      <section class="section fade-up" aria-label="Active order progress">
+        <div class="section-header">
+          <span class="section-title">Active Orders</span>
+          <a href="#orders" class="view-all" aria-label="View all orders">View all →</a>
+        </div>
+
+        <!-- Order card — glass variant -->
+        <div class="glass" style="padding: var(--sp-4); margin-bottom: var(--sp-3);">
+          <div class="flex-between mb-3">
+            <div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:0.9rem;color:var(--txt-primary)">
+                Sunrise Constructions
+              </div>
+              <div style="font-size:0.74rem;color:var(--txt-tertiary);margin-top:2px">
+                Block 5 Foundation · M25-STD · 60 m³ ordered
+              </div>
+            </div>
+            <span class="badge badge-pouring">Active</span>
+          </div>
+
+          <div class="pour-progress">
+            <div class="pour-progress-bar" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="60" aria-label="42 of 60 cubic metres delivered">
+              <div class="pour-progress-fill" style="width:70%"></div>
+            </div>
+            <div class="pour-progress-labels">
+              <span class="text-xs text-muted">42 m³ delivered</span>
+              <span class="text-xs" style="font-weight:700;color:var(--blue-500)">70%</span>
+              <span class="text-xs text-muted">60 m³ total</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order card 2 -->
+        <div class="glass" style="padding: var(--sp-4);">
+          <div class="flex-between mb-3">
+            <div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:0.9rem;color:var(--txt-primary)">
+                Kumar Infra Projects
+              </div>
+              <div style="font-size:0.74rem;color:var(--txt-tertiary);margin-top:2px">
+                Column Grid B4 · M30-STD · 45 m³ ordered
+              </div>
+            </div>
+            <span class="badge badge-transit">En Route</span>
+          </div>
+
+          <div class="pour-progress">
+            <div class="pour-progress-bar" role="progressbar" aria-valuenow="18" aria-valuemin="0" aria-valuemax="45" aria-label="18 of 45 cubic metres delivered">
+              <div class="pour-progress-fill" style="width:40%"></div>
+            </div>
+            <div class="pour-progress-labels">
+              <span class="text-xs text-muted">18 m³ delivered</span>
+              <span class="text-xs" style="font-weight:700;color:var(--blue-500)">40%</span>
+              <span class="text-xs text-muted">45 m³ total</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ── INVENTORY SNAPSHOT ────────────────────────── -->
+      <section class="section fade-up" aria-label="Inventory snapshot">
+        <div class="section-header">
+          <span class="section-title">Inventory</span>
+          <a href="#inventory" class="view-all" aria-label="View inventory details">Details →</a>
+        </div>
+
+        <div class="raised" style="padding: var(--sp-4);">
+
+          <div class="inv-row">
+            <div class="inv-icon" aria-hidden="true">🏭</div>
+            <div class="inv-info">
+              <div class="inv-name">Cement (OPC 53)</div>
+              <div class="inv-bar-wrap">
+                <div class="inv-bar-fill ok" style="width:78%" role="progressbar" aria-valuenow="78" aria-label="78% cement stock"></div>
+              </div>
+            </div>
+            <div class="inv-stock">19,500 kg</div>
+          </div>
+
+          <div class="inv-row">
+            <div class="inv-icon" aria-hidden="true">🪨</div>
+            <div class="inv-info">
+              <div class="inv-name">Aggregate 20mm</div>
+              <div class="inv-bar-wrap">
+                <div class="inv-bar-fill warn" style="width:28%" role="progressbar" aria-valuenow="28" aria-label="28% aggregate 20mm stock — low"></div>
+              </div>
+            </div>
+            <div class="inv-stock" style="color:var(--clr-warning)">4,200 kg ⚠</div>
+          </div>
+
+          <div class="inv-row">
+            <div class="inv-icon" aria-hidden="true">🏖️</div>
+            <div class="inv-info">
+              <div class="inv-name">M-Sand</div>
+              <div class="inv-bar-wrap">
+                <div class="inv-bar-fill ok" style="width:63%" role="progressbar" aria-valuenow="63" aria-label="63% sand stock"></div>
+              </div>
+            </div>
+            <div class="inv-stock">12,600 kg</div>
+          </div>
+
+          <div class="inv-row">
+            <div class="inv-icon" aria-hidden="true">💧</div>
+            <div class="inv-info">
+              <div class="inv-name">Water</div>
+              <div class="inv-bar-wrap">
+                <div class="inv-bar-fill ok" style="width:90%" role="progressbar" aria-valuenow="90" aria-label="90% water stock"></div>
+              </div>
+            </div>
+            <div class="inv-stock">45,000 L</div>
+          </div>
+
+          <div class="inv-row">
+            <div class="inv-icon" aria-hidden="true">🧪</div>
+            <div class="inv-info">
+              <div class="inv-name">Admixture</div>
+              <div class="inv-bar-wrap">
+                <div class="inv-bar-fill danger" style="width:12%" role="progressbar" aria-valuenow="12" aria-label="12% admixture stock — critical"></div>
+              </div>
+            </div>
+            <div class="inv-stock" style="color:var(--clr-danger)">24 L 🚨</div>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- ── BUTTON SHOWCASE ───────────────────────────── -->
+      <section class="section fade-up" aria-label="Design system button examples">
+        <div class="section-header">
+          <span class="section-title">Design System — Buttons</span>
+        </div>
+
+        <div class="glass" style="padding:var(--sp-5); display:flex; flex-direction:column; gap:var(--sp-3);">
+          <button class="btn btn-primary btn-full">Primary Action — Soft 3D Blue</button>
+          <button class="btn btn-secondary btn-full">Secondary — Sage Soft 3D</button>
+          <button class="btn btn-danger btn-full">Danger — Mark as Wasted</button>
+          <button class="btn btn-ghost btn-full">Ghost — View Details</button>
+          <div class="flex gap-2">
+            <button class="btn btn-primary btn-sm" style="flex:1">Small</button>
+            <button class="btn btn-secondary btn-sm" style="flex:1">Secondary</button>
+            <button class="btn-icon" aria-label="Settings">⚙️</button>
+            <button class="btn-icon active" aria-label="Fleet active">🚛</button>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ── STATUS BADGES SHOWCASE ───────────────────── -->
+      <section class="section fade-up" aria-label="Status badges">
+        <div class="section-header">
+          <span class="section-title">Status Badges</span>
+        </div>
+        <div class="raised" style="padding:var(--sp-4); display:flex; flex-wrap:wrap; gap:var(--sp-2);">
+          <span class="badge badge-available">Available</span>
+          <span class="badge badge-batching">Batching</span>
+          <span class="badge badge-transit">En Route</span>
+          <span class="badge badge-pouring">Pouring</span>
+          <span class="badge badge-returning">Returning</span>
+          <span class="badge badge-maintenance">Maintenance</span>
+          <span class="badge badge-completed">Completed</span>
+          <span class="badge badge-wasted">Wasted</span>
+        </div>
+      </section>
+
+
+    </main><!-- /#app-root -->
+
+
+    <!-- ── BOTTOM NAVIGATION BAR ──────────────────────── -->
+    <nav class="bottombar glass-nav"
+         role="navigation"
+         aria-label="Main navigation">
+
+      <button class="nav-tab" data-hash="#dispatch" aria-label="Dispatch console">
+        <span class="nav-tab-icon" aria-hidden="true">📋</span>
+        <span>Dispatch</span>
+      </button>
+
+      <button class="nav-tab active" data-hash="#fleet" aria-label="Fleet board (current page)">
+        <span class="nav-tab-icon" aria-hidden="true">🚛</span>
+        <span>Fleet</span>
+      </button>
+
+      <button class="nav-tab" data-hash="#orders" aria-label="Orders">
+        <span class="nav-tab-icon" aria-hidden="true">📦</span>
+        <span>Orders</span>
+        <span class="nav-badge" aria-label="3 active orders">3</span>
+      </button>
+
+      <button class="nav-tab" data-hash="#inventory" aria-label="Inventory">
+        <span class="nav-tab-icon" aria-hidden="true">🏭</span>
+        <span>Stock</span>
+      </button>
+
+      <button class="nav-tab" data-hash="#admin" aria-label="Admin settings">
+        <span class="nav-tab-icon" aria-hidden="true">⚙️</span>
+        <span>Admin</span>
+      </button>
+
+    </nav><!-- /.bottombar -->
+
+  </div><!-- /#app-shell -->
+
+
+  <!-- ── TOAST AREA ─────────────────────────────────────── -->
+  <div class="toast-area" id="toast-area" role="status" aria-live="polite">
+    <!-- Toasts injected by JS -->
+  </div>
+
+
+  <!-- ── INLINE DEMO INTERACTIONS ──────────────────────── -->
+  <script>
+    // ── Tab switching demo ────────────────────────────────
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+
+    // ── FAB button toast feedback ─────────────────────────
+    document.getElementById('create-batch-btn').addEventListener('click', () => {
+      showToast('🏗️ Batch ticket creation requires network connection.', 'info');
+    });
+
+    // ── Quick action buttons ──────────────────────────────
+    document.querySelectorAll('.quick-action').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const label = btn.querySelector('.quick-action-label').textContent;
+        showToast(`→ Opening: ${label}`, 'info');
+      });
+    });
+
+    // ── Toast utility ─────────────────────────────────────
+    function showToast(msg, type = 'info') {
+      const area  = document.getElementById('toast-area');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+
+      const colors = {
+        info:    'rgba(59,134,209,0.25)',
+        success: 'rgba(78,168,122,0.25)',
+        warning: 'rgba(217,148,58,0.25)',
+        danger:  'rgba(217,91,91,0.25)'
+      };
+
+      toast.style.borderColor = colors[type] || colors.info;
+      area.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = '0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    // ── Perishability ring live tick (for demo) ───────────
+    // In production this is driven by fleet.js using batch_time
+    setInterval(() => {
+      document.querySelectorAll('.perish-fill.red').forEach(el => {
+        // Flicker effect mirrors the CSS animation fallback
+        el.style.opacity = el.style.opacity === '0.6' ? '1' : '0.6';
+      });
+    }, 900);
+
+    // ── Dispatch button micro-interaction ─────────────────
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('mousedown', function(e) {
+        // Create ripple
+        const ripple = document.createElement('span');
+        const rect   = btn.getBoundingClientRect();
+        const size   = Math.max(rect.width, rect.height);
+        ripple.style.cssText = `
+          position:absolute;
+          width:${size}px;height:${size}px;
+          top:${e.clientY-rect.top-size/2}px;
+          left:${e.clientX-rect.left-size/2}px;
+          background:rgba(255,255,255,0.25);
+          border-radius:50%;
+          pointer-events:none;
+          animation:ripple 0.55s ease-out forwards;
+        `;
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 560);
+      });
+    });
+  </script>
+
+</body>
+</html>
